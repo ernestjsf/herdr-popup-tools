@@ -1,0 +1,11 @@
+{
+  "name": "herdr-popup-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "check": "herdr-app check mods/popup-tools"
+  }
+}
