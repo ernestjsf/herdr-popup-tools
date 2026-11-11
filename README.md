@@ -5,7 +5,7 @@ desktop app. Pick one and it runs in a floating dialog covering 90% of the windo
 in the focused pane's folder. When the program exits, the dialog closes. Press the
 key again, Esc, or click outside to close the dialog early, which ends the program.
 
-<img src="preview.png" width="900" alt="The popup-tools picker over a Herdr window: three rows, each with an accent key badge, the tool's name and its command dimmed.">
+<img src="preview.png" width="413" alt="The popup-tools picker: three rows, each with an accent key badge, the tool's name and its command dimmed.">
 
 Unlike [Nico-Mayer/lazygit-herdr](https://github.com/Nico-Mayer/lazygit-herdr), it runs any
 command, starts a fresh run each time, and closes the dialog when the program exits.

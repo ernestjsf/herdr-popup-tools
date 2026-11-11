@@ -33,6 +33,8 @@ terminal.
 
 ## How it behaves
 
+- It shows no agent status. Working, blocked, done and idle agents look the
+  same to it, and a tool's terminal is not an agent.
 - `ctrl-alt-t` (`mod.open:popup-tools`) opens the picker with the keyboard on it.
 - A key letter without ctrl, alt or cmd launches that tool. Up and Down move
   the selection and wrap. Enter launches the selected row. A click launches
@@ -49,6 +51,7 @@ terminal.
   `mod.open {name: "popup-tools"}`. The request is cleared and that tool is
   launched. An unknown tool shows an error toast.
 - The config file is read on every open, so edits apply on the next press.
+- A broken config file shows its error toast and closes the picker.
 
 ## Built from
 
@@ -77,7 +80,10 @@ One mod, `mods/popup-tools/`, plus a `keys.json` with
     two cases it renders an empty root. Otherwise it renders the rows, with
     `track_focus` and `on_key_down` on the root (`e.key_char` for letters,
     `e.key` for up, down, enter and escape).
-  - **Launch**: `hc(["run", "--json", "--bg", "--rm", "--no-parent", "--cwd", focused().cwd, "--label", "herdr.mod=popup-tools", "--label", "popup-tools.tool=<name>", "--", "/bin/sh", "-c", 'exec "${SHELL:-/bin/sh}" -lc "$1"', "sh", "exec <command>"])`,
+    `init` also keeps `focused()` as the origin, before the picker takes the
+    keyboard. A picked tool uses the origin's `cwd` and `pane`. A requested
+    tool reads `focused()` at launch.
+  - **Launch**: `hc(["run", "--json", "--bg", "--rm", "--no-parent", "--cwd", origin.cwd, "--label", "herdr.mod=popup-tools", "--label", "popup-tools.tool=<name>", "--", "/bin/sh", "-c", 'exec "${SHELL:-/bin/sh}" -lc "$1"', "sh", "exec <command>"])`,
     then `closeOverlay(picker)`, then
     `openOverlay({kind: "dialog", width: size, height: size, layout: {type: "column", children: [{type: "block", size: {px: 0}, content: {mod: "popup-tools", props: {role: "sentinel", terminal, previousPane}}}, {type: "block", content: {terminal}}]}})`.
   - **Sentinel** (the 0px block). `render` closes its overlay once its terminal
@@ -96,6 +102,11 @@ One mod, `mods/popup-tools/`, plus a `keys.json` with
   (toggle-close, request launch) with the overlay id in `globalThis` memory,
   and clear the guard when the work finishes, since overlay ids are reused.
   Don't return early from the whole `init`, or the copy that stays has no rows.
+- Read `focused()` in the picker's `init`, not at launch. Once the picker has
+  the keyboard, the pane under it is no longer the focused one.
+- A request set while a tool dialog is open is not cleared. That press only
+  closes the dialog, and the next plain press launches the requested tool
+  with no picker.
 - `globalThis` survives hot reload. Use a versioned key (`__popup_tools_v1`).
 - A mod can't import files outside its own folder, even through a symlink.
 - A dialog's tasks end when it closes. Close the picker after the last `await`
@@ -103,7 +114,10 @@ One mod, `mods/popup-tools/`, plus a `keys.json` with
 - Launch through the login shell (`$SHELL -lc "exec …"`), or `~` and login `PATH` tools won't resolve.
 - With a tool open, the key briefly opens an empty picker dialog that closes
   itself. Tasks need a live overlay, so the picker can't be skipped.
-- Assumes macOS or Linux (`/bin/sh` and `$SHELL`).
+- Assumes macOS or Linux (`/bin/sh` and `$SHELL`), `hc` on the app's path,
+  and `lazygit` installed for the default tool.
+- `mod.open` while a tool dialog is open ends that program. Scripts that open
+  the picker should check `herdr-app status` for a `layout` overlay first.
 
 ## Done when
 
