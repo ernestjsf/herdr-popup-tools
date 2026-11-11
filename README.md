@@ -40,7 +40,7 @@ yours, and run `herdr-app check ~/.config/herdr-app/mods/popup-tools`.
 
 - `key`: one character, unique.
 - `name`: shown in the picker.
-- `command`: run through your login shell (`$SHELL -lc "exec <command>"`), so your `PATH` and `~` work.
+- `command`: run through your login shell (`$SHELL -lc "exec <command>"`), so your `PATH` and `~` work. It must be one program with arguments. Put `cd x && tool` or `VAR=1 tool` in a script.
 - `size`: optional, the share of the window for both width and height. Default `0.9`.
 
 Without the file you get one tool, lazygit on `g`. A broken file shows an error

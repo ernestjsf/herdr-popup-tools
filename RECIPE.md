@@ -102,8 +102,11 @@ One mod, `mods/popup-tools/`, plus a `keys.json` with
   (toggle-close, request launch) with the overlay id in `globalThis` memory,
   and clear the guard when the work finishes, since overlay ids are reused.
   Don't return early from the whole `init`, or the copy that stays has no rows.
-- Read `focused()` in the picker's `init`, not at launch. Once the picker has
-  the keyboard, the pane under it is no longer the focused one.
+- A picked tool uses the `focused()` read in the picker's `init`, not one read
+  at launch.
+- The command runs as `exec <command>`, so it must be one program with
+  arguments. `FOO=1 tool` exits 127, and `cd ~/x && tool` exits at once
+  without running `tool`. Put compound commands in a script.
 - A request set while a tool dialog is open is not cleared. That press only
   closes the dialog, and the next plain press launches the requested tool
   with no picker.
